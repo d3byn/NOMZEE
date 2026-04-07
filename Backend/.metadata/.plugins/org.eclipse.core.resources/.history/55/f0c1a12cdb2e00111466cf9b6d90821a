@@ -1,0 +1,111 @@
+package com.example.foodapp.service.serviceimpl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
+
+import com.example.foodapp.entity.CartItem;
+import com.example.foodapp.entity.Order;
+import com.example.foodapp.entity.OrderItem;
+import com.example.foodapp.entity.User;
+import com.example.foodapp.repository.CartRepository;
+import com.example.foodapp.repository.OrderItemRepository;
+import com.example.foodapp.repository.OrderRepository;
+import com.example.foodapp.repository.UserRepository;
+import com.example.foodapp.service.OrderService;
+
+import jakarta.servlet.http.HttpSession;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private CartRepository cartRepo;
+
+    @Autowired
+    private OrderRepository orderRepo;
+    
+    @Autowired
+    private JavaMailSender mailSender;
+    
+    @Autowired
+    private UserRepository userRepo;
+    
+    @Autowired
+    private OrderItemRepository orderItemRepo;
+    
+    @Override
+    public Order placeOrder(User user) {
+
+        
+        User fullUser = userRepo.findById(user.getId()).orElseThrow();
+
+        List<CartItem> cartItems = cartRepo.findByUser(fullUser);
+
+        double total = cartItems.stream()
+                .mapToDouble(c -> c.getFoodItem().getPrice() * c.getQuantity())
+                .sum();
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Cart is empty");
+        }
+        Order order = new Order();
+        order.setUser(fullUser);
+        order.setTotalAmount(total);
+        order.setStatus("PLACED");
+        order.setAddress(fullUser.getAddress());
+        order.setCreatedAt(java.time.LocalDateTime.now().toString());
+
+        Order savedOrder = orderRepo.save(order);
+
+        for (CartItem cart : cartItems) {
+
+            OrderItem item = new OrderItem();
+            item.setOrder(savedOrder);  // correct reference
+            item.setFoodItem(cart.getFoodItem());
+            item.setQuantity(cart.getQuantity());
+
+            orderItemRepo.save(item);
+        }
+        try {
+        	sendOrderEmail(
+                    fullUser.getEmail(),
+                    fullUser.getName(),
+                    total,
+                    fullUser.getAddress()
+            );
+
+        } catch (Exception e) {
+            System.out.println("Email failed but order saved");
+        }
+        
+        cartRepo.deleteAll(cartItems);
+
+        return savedOrder;
+    }
+    private void sendOrderEmail(String toEmail, String name, double total, String address) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom("anujaghosal85@gmail.com");
+        message.setTo(toEmail);
+        message.setSubject("Order Confirmed!");
+
+        String body = "Hello " + name +
+                "\n\nYour order has been placed successfully!" +
+                "\nTotal Amount: ₹" + total +
+                "\nDelivery Address: " + address +
+                "\n\nThank you for ordering!";
+
+        message.setText(body);
+
+        mailSender.send(message);
+    }
+	@Override
+	public Order placeOrder(HttpSession session, Double grandTotal) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}
