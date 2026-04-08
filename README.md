@@ -290,8 +290,6 @@ POST /order/place
 
 ## 📸 Screenshots
 
-> *Add screenshots of your app here*
-
 | Home Page | Menu | Cart | Dashboard |
 |---|---|---|---|
 | ![Home]() | ![Menu]() | ![Cart]() | ![Dashboard]() |
