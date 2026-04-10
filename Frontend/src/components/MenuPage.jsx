@@ -38,7 +38,7 @@ export default function MenuPage({ user, foods, loading, onAddToCart }) {
     const qty = quantities[food.id] || 1
     setAdding(food.id)
     await onAddToCart(food.id, qty)
-    // ✅ Reset qty back to 1 after adding so next click adds 1, not accumulated qty
+    // Reset qty back to 1 after adding so next click adds 1, not accumulated qty
     setQuantities(p => ({ ...p, [food.id]: 1 }))
     setAdding(null)
   }

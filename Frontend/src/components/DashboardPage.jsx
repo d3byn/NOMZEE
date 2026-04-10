@@ -367,9 +367,9 @@ export default function DashboardPage({ user, onFoodsUpdated, toast }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════════════════════
+/*
    MANAGE MENU TAB — shows ONLY this owner's foods, with edit + delete + toggle
-══════════════════════════════════════════════════════════════════════════════ */
+*/
 const UNAVAIL_KEY = 'nomzee_unavailable_foods'
 
 function ManageMenuTab({ foods, loading, myRestaurantIds, setTab, onRefresh, onFoodUpdated, toast }) {

@@ -51,7 +51,7 @@ export default function AuthPage({ mode, onLogin }) {
         const text = typeof res.data === 'string' ? res.data : JSON.stringify(res.data)
 
         if (text.toLowerCase().includes('success') || text.toLowerCase().includes('login')) {
-          const role = getRoleForEmail(form.email) // ✅ look up saved role
+          const role = getRoleForEmail(form.email) // look up saved role
           setMessage({ type: 'success', text: 'Logged in! Redirecting...' })
           onLogin({
             name: form.email.split('@')[0],
@@ -78,7 +78,7 @@ export default function AuthPage({ mode, onLogin }) {
         const res = await axios.post('/auth/register', payload)
         const text = typeof res.data === 'string' ? res.data : 'Registered successfully!'
 
-        // ✅ Save email → role so login can read it later
+        // Save email → role so login can read it later
         saveRoleForEmail(form.email, form.role)
 
         setMessage({ type: 'success', text: text + ' Please sign in.' })
@@ -112,7 +112,7 @@ export default function AuthPage({ mode, onLogin }) {
           {!isLogin && (
             <div className="form-group">
               <label>Full Name</label>
-              <input name="name" type="text" placeholder="e.g. Anuja"
+              <input name="name" type="text" placeholder="e.g. John Doe"
                 value={form.name} onChange={handleChange} required />
             </div>
           )}

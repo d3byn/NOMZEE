@@ -16,6 +16,7 @@ import com.example.foodapp.service.RestaurantService;
 
 import jakarta.servlet.http.HttpSession;
 
+
 @RestController
 @RequestMapping("/restaurant")
 public class RestaurantController {
