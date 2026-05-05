@@ -5,7 +5,7 @@
 # NOMZEE
 
 
-**A full-stack online food delivery platform built with Spring Boot & React.js**
+**A full-stack online food delivery platform built with Spring Boot & React.js (still in progress...active changes are being made)**
 
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
