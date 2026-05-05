@@ -5,36 +5,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/auth': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-        configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq) => {
-            proxyReq.setHeader('Origin', 'http://localhost:5173')
-          })
-        }
-      },
-      '/food': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/cart': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/order': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/restaurant': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
+      '/auth':       { target: 'http://localhost:8080', changeOrigin: true },
+      '/food':       { target: 'http://localhost:8080', changeOrigin: true },
+      '/cart':       { target: 'http://localhost:8080', changeOrigin: true },
+      '/order':      { target: 'http://localhost:8080', changeOrigin: true },
+      '/restaurant': { target: 'http://localhost:8080', changeOrigin: true },
+      '/admin':      { target: 'http://localhost:8080', changeOrigin: true },
+      '/payment':    { target: 'http://localhost:8080', changeOrigin: true },
     }
   }
 })

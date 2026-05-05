@@ -1,0 +1,5 @@
+package com.example.foodapp.enums;
+
+public class Role {
+
+}

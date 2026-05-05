@@ -1,9 +1,15 @@
 package com.example.foodapp.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.*;
 
 @Entity
 public class User {
@@ -49,4 +55,11 @@ public class User {
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+
+
+    
+    private boolean isBlocked = false;
+ 
+    public boolean isBlocked() { return isBlocked; }
+    public void setBlocked(boolean blocked) { isBlocked = blocked; }
 }

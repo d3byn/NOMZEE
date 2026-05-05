@@ -2,23 +2,13 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
 
-// Local map: email → role, so login knows the correct role
-// (Backend login response is just a string, not a user object)
+// Only needed for registering new users — maps email→role for the register flow
 const saveRoleForEmail = (email, role) => {
   try {
     const map = JSON.parse(localStorage.getItem('nomzee_role_map') || '{}')
     map[email] = role
     localStorage.setItem('nomzee_role_map', JSON.stringify(map))
   } catch {}
-}
-
-const getRoleForEmail = (email) => {
-  try {
-    const map = JSON.parse(localStorage.getItem('nomzee_role_map') || '{}')
-    return map[email] || 'CUSTOMER'
-  } catch {
-    return 'CUSTOMER'
-  }
 }
 
 export default function AuthPage({ mode, onLogin }) {
@@ -43,42 +33,74 @@ export default function AuthPage({ mode, onLogin }) {
 
     try {
       if (isLogin) {
-        const res = await axios.post(
-          '/auth/login',
+        // ── LOGIN ─────────────────────────────────────────────────────────
+        // Step 1: do the login call
+        const loginRes = await axios.post('/auth/login',
           { email: form.email, password: form.password },
           { withCredentials: true }
         )
-        const text = typeof res.data === 'string' ? res.data : JSON.stringify(res.data)
+        const loginText = typeof loginRes.data === 'string'
+          ? loginRes.data : JSON.stringify(loginRes.data)
 
-        if (text.toLowerCase().includes('success') || text.toLowerCase().includes('login')) {
-          const role = getRoleForEmail(form.email) // look up saved role
-          setMessage({ type: 'success', text: 'Logged in! Redirecting...' })
-          onLogin({
-            name: form.email.split('@')[0],
-            email: form.email,
-            role,
-          })
-          // Send BUSINESS to dashboard, CUSTOMER to menu
-          setTimeout(() => navigate(role === 'BUSINESS' ? '/dashboard' : '/menu'), 700)
-        } else {
-          setMessage({ type: 'error', text: text || 'Invalid credentials' })
+        // Handle blocked
+        if (loginText.toLowerCase().includes('blocked')) {
+          setMessage({ type: 'error', text: loginText })
+          setLoading(false)
+          return
         }
+
+        if (!loginText.toLowerCase().includes('success') &&
+            !loginText.toLowerCase().includes('login')) {
+          setMessage({ type: 'error', text: loginText || 'Invalid credentials' })
+          setLoading(false)
+          return
+        }
+
+        // Step 2: fetch the actual logged-in user from backend to get REAL role
+        // This is the key fix — we don't rely on localStorage for role anymore
+        let userData = null
+        try {
+          const meRes = await axios.get('/auth/me', { withCredentials: true })
+          userData = meRes.data  // { id, name, email, role, ... }
+        } catch {
+          // /auth/me not yet implemented — fall back to localStorage map
+          const savedMap = JSON.parse(localStorage.getItem('nomzee_role_map') || '{}')
+          const role = savedMap[form.email] || 'CUSTOMER'
+          userData = { name: form.email.split('@')[0], email: form.email, role }
+        }
+
+        const role = userData.role || 'CUSTOMER'
+        setMessage({ type: 'success', text: `Logged in as ${role}! Redirecting...` })
+
+        onLogin({
+          id:    userData.id,
+          name:  userData.name || form.email.split('@')[0],
+          email: userData.email || form.email,
+          role,
+        })
+
+        const dest = role === 'ADMIN' ? '/admin'
+                   : role === 'BUSINESS' ? '/dashboard'
+                   : '/menu'
+        setTimeout(() => navigate(dest), 700)
+
       } else {
+        // ── REGISTER ──────────────────────────────────────────────────────
         const payload = {
-          name: form.name,
-          email: form.email,
+          name:     form.name,
+          email:    form.email,
           password: form.password,
-          role: form.role,
+          role:     form.role,
         }
         if (form.role === 'CUSTOMER') {
-          payload.phone = form.phone
+          payload.phone   = form.phone
           payload.address = form.address
         }
 
-        const res = await axios.post('/auth/register', payload)
+        const res  = await axios.post('/auth/register', payload)
         const text = typeof res.data === 'string' ? res.data : 'Registered successfully!'
 
-        // Save email → role so login can read it later
+        // Save role so login can fall back if /auth/me isn't implemented yet
         saveRoleForEmail(form.email, form.role)
 
         setMessage({ type: 'success', text: text + ' Please sign in.' })
@@ -86,20 +108,19 @@ export default function AuthPage({ mode, onLogin }) {
       }
     } catch (err) {
       const errData = err.response?.data
-      const errMsg = typeof errData === 'string'
+      const errMsg  = typeof errData === 'string'
         ? errData
-        : (errData?.message || 'Server error. Make sure the backend is running on port 8080.')
+        : (errData?.message || 'Server error. Make sure backend is running.')
       setMessage({ type: 'error', text: errMsg })
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   return (
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <img src="/logo_nomzee.png" alt="NOMZEE" style={{ width: 52, height: 52, borderRadius: 14, objectFit: 'cover', marginBottom: 14 }} />
+          <img src="/logo_nomzee.png" alt="NOMZEE"
+            style={{ width: 52, height: 52, borderRadius: 14, objectFit: 'cover', marginBottom: 14 }} />
           <h1>{isLogin ? 'Welcome back!' : 'Join NOMZEE'}</h1>
           <p>{isLogin ? 'Sign in to continue' : 'Create your free account'}</p>
         </div>
@@ -112,7 +133,7 @@ export default function AuthPage({ mode, onLogin }) {
           {!isLogin && (
             <div className="form-group">
               <label>Full Name</label>
-              <input name="name" type="text" placeholder="e.g. John Doe"
+              <input name="name" type="text" placeholder="e.g. Anuja"
                 value={form.name} onChange={handleChange} required />
             </div>
           )}

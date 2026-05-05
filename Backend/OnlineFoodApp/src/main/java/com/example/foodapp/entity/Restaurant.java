@@ -1,6 +1,10 @@
 package com.example.foodapp.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Restaurant {
@@ -26,4 +30,12 @@ public class Restaurant {
 
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
+
+
+    private String status = "PENDING"; // PENDING | APPROVED | REJECTED | BLOCKED
+ 
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    
 }

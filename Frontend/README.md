@@ -1,4 +1,4 @@
-# Nomzee Frontend
+# FoodRush Frontend
 
 A modern food delivery app frontend built with React (Vite), connecting to the Spring Boot backend.
 

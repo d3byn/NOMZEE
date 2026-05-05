@@ -10,6 +10,7 @@ import CartPage from './components/CartPage'
 import OrdersPage from './components/OrdersPage'
 import AuthPage from './components/AuthPage'
 import DashboardPage from './components/DashboardPage'
+import AdminPage from './components/AdminPage'
 
 import './App.css'
 
@@ -19,19 +20,47 @@ export default function App() {
   const [foodsLoading, setFoodsLoading] = useState(true)
   const [cartCount,    setCartCount]    = useState(0)
   const [toast,        setToast]        = useState(null)
+  const [theme,        setTheme]        = useState(() => localStorage.getItem('nomzee_theme') || 'dark')
 
-  // Restore session
+  // ── Apply theme ──────────────────────────────────────────────────────────────
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('nomzee_theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
+
+  // ── Restore session — then verify with backend to get REAL role ─────────────
   useEffect(() => {
     const saved = localStorage.getItem('nomzee_user')
-    if (saved) { try { setUser(JSON.parse(saved)) } catch {} }
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        setUser(parsed)
+        // Silently verify the session is still valid and role is correct
+        axios.get('/auth/me', { withCredentials: true })
+          .then(res => {
+            const fresh = res.data
+            if (fresh?.role) {
+              // Update stored user with fresh role from DB
+              const updated = { ...parsed, role: fresh.role, name: fresh.name || parsed.name, id: fresh.id }
+              setUser(updated)
+              localStorage.setItem('nomzee_user', JSON.stringify(updated))
+            }
+          })
+          .catch(() => {
+            // Session expired — clear and force re-login
+            setUser(null)
+            localStorage.removeItem('nomzee_user')
+          })
+      } catch { localStorage.removeItem('nomzee_user') }
+    }
   }, [])
 
-  // Sync cart count from backend on login
   const syncCartCount = useCallback(async () => {
     try {
       const res = await axios.get('/cart/view', { withCredentials: true })
-      const items = Array.isArray(res.data) ? res.data : []
-      setCartCount(items.length)
+      setCartCount(Array.isArray(res.data) ? res.data.length : 0)
     } catch { setCartCount(0) }
   }, [])
 
@@ -39,7 +68,6 @@ export default function App() {
     if (user?.role === 'CUSTOMER') syncCartCount()
   }, [user, syncCartCount])
 
-  // Fetch all foods
   const fetchFoods = useCallback(async () => {
     setFoodsLoading(true)
     try {
@@ -53,7 +81,7 @@ export default function App() {
 
   const showToast = (msg, type = 'info') => {
     setToast({ msg, type })
-    setTimeout(() => setToast(null), 3200)
+    setTimeout(() => setToast(null), 3500)
   }
 
   const handleLogin = (userData) => {
@@ -68,13 +96,8 @@ export default function App() {
     showToast('Signed out successfully')
   }
 
-  // Called after order is placed — resets cart badge to 0
-  const handleOrderPlaced = () => {
-    setCartCount(0)
-  }
+  const handleOrderPlaced = () => setCartCount(0)
 
-  // POST /cart/add  body: { foodId, qty }
-  // qty is always 1 per click — user sets quantity with the +/- in the card
   const handleAddToCart = async (foodId, qty) => {
     try {
       await axios.post('/cart/add', { foodId, qty }, { withCredentials: true })
@@ -86,48 +109,57 @@ export default function App() {
     }
   }
 
+  const role = user?.role
+
   return (
     <BrowserRouter>
       <div className="app-wrapper">
-        <Navbar user={user} cartCount={cartCount} onLogout={handleLogout} />
-
+        <Navbar
+          user={user}
+          cartCount={cartCount}
+          onLogout={handleLogout}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Welcome user={user} foods={foods} />} />
 
             <Route path="/menu" element={
-              <MenuPage
-                user={user}
-                foods={foods}
-                loading={foodsLoading}
-                onAddToCart={handleAddToCart}
-                onFoodsUpdated={fetchFoods}
-              />
+              <MenuPage user={user} foods={foods} loading={foodsLoading} onAddToCart={handleAddToCart} />
             } />
 
             <Route path="/cart" element={
-              user?.role === 'CUSTOMER'
+              role === 'CUSTOMER'
                 ? <CartPage user={user} toast={showToast} onOrderPlaced={handleOrderPlaced} />
-                : <Navigate to="/" />
+                : <Navigate to="/login" />
             } />
 
             <Route path="/orders" element={
-              user?.role === 'CUSTOMER'
-                ? <OrdersPage user={user} />
-                : <Navigate to="/" />
+              role === 'CUSTOMER' ? <OrdersPage user={user} /> : <Navigate to="/login" />
             } />
 
             <Route path="/dashboard" element={
-              user?.role === 'BUSINESS'
+              role === 'BUSINESS'
                 ? <DashboardPage user={user} onFoodsUpdated={fetchFoods} toast={showToast} />
+                : <Navigate to="/" />
+            } />
+
+            <Route path="/admin" element={
+              role === 'ADMIN'
+                ? <AdminPage user={user} toast={showToast} />
                 : <Navigate to="/" />
             } />
 
             <Route path="/restaurant" element={<Navigate to="/dashboard" />} />
 
             <Route path="/login" element={
-              user ? <Navigate to={user.role === 'BUSINESS' ? '/dashboard' : '/'} /> : <AuthPage mode="login" onLogin={handleLogin} />
+              !user ? <AuthPage mode="login" onLogin={handleLogin} />
+                    : role === 'ADMIN' ? <Navigate to="/admin" />
+                    : role === 'BUSINESS' ? <Navigate to="/dashboard" />
+                    : <Navigate to="/" />
             } />
+
             <Route path="/register" element={
               user ? <Navigate to="/" /> : <AuthPage mode="register" onLogin={handleLogin} />
             } />

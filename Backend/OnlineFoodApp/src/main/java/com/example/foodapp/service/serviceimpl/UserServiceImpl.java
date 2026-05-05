@@ -11,26 +11,37 @@ import com.example.foodapp.service.UserService;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository repo;
+	private final UserRepository repo;
+	private final BCryptPasswordEncoder encoder;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	//  Constructor Injection
+	public UserServiceImpl(UserRepository repo, BCryptPasswordEncoder encoder) {
+		this.repo = repo;
+		this.encoder = encoder;
+	}
 
-    @Override
-    public User register(User user) {
-        user.setPassword(encoder.encode(user.getPassword())); // encrypt
-        return repo.save(user);
-    }
+	// REGISTER
+	@Override
+	public User register(User user) {
+		user.setPassword(encoder.encode(user.getPassword())); // encrypt password
+		return repo.save(user);
+	}
 
-    @Override
-    public User login(String email, String password) {
+	//  LOGIN (NO session logic here)
+	@Override
+	public User login(String email, String password) {
 
-        User user = repo.findByEmail(email);
+		User user = repo.findByEmail(email);
 
-        if (user != null && encoder.matches(password, user.getPassword())) {
-            return user;
-        }
+		if (user != null && encoder.matches(password, user.getPassword())) {
 
-        return null;
-    }
+			if (user.isBlocked()) {
+				throw new RuntimeException("Account is blocked. Contact admin.");
+			}
+
+			return user; //  fresh DB user
+		}
+
+		return null;
+	}
 }
