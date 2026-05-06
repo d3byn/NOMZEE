@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const IMG_KEY     = 'nomzee_food_images'
 const UNAVAIL_KEY = 'nomzee_unavailable_foods'
@@ -22,7 +23,21 @@ export default function MenuPage({ user, foods, loading, onAddToCart }) {
   const [quantities, setQuantities] = useState({})
   const navigate = useNavigate()
 
+  const [blockedRestIds, setBlockedRestIds] = useState(new Set())
   const unavailable = getUnavailable()
+
+  // Fetch restaurants to know which are BLOCKED by admin
+  useEffect(() => {
+    axios.get('/restaurant/all')
+      .then(res => {
+        const all = Array.isArray(res.data) ? res.data : []
+        const blocked = new Set(
+          all.filter(r => r.status === 'BLOCKED').map(r => String(r.id))
+        )
+        setBlockedRestIds(blocked)
+      })
+      .catch(() => {})
+  }, [])
 
   const filtered = foods.filter(f =>
     f.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -33,7 +48,9 @@ export default function MenuPage({ user, foods, loading, onAddToCart }) {
   const handleAdd = async (food) => {
     if (!user)                              { navigate('/login'); return }
     if (user.role !== 'CUSTOMER')           return
-    if (unavailable.has(String(food.id)))   return
+    const restId = String(food.restaurant?.id ?? '')
+    if (unavailable.has(String(food.id))) return
+    if (blockedRestIds.has(restId)) return
     const qty = quantities[food.id] || 1
     setAdding(food.id)
     await onAddToCart(food.id, qty)
@@ -94,7 +111,8 @@ export default function MenuPage({ user, foods, loading, onAddToCart }) {
                 adding={adding === food.id}
                 canAdd={user?.role === 'CUSTOMER'}
                 isGuest={!user}
-                isUnavailable={unavailable.has(String(food.id))}
+                isUnavailable={unavailable.has(String(food.id)) || blockedRestIds.has(String(food.restaurant?.id ?? ''))}
+                isBlockedByAdmin={blockedRestIds.has(String(food.restaurant?.id ?? ''))}
                 delay={i * 0.035}
               />
             ))}
@@ -105,7 +123,7 @@ export default function MenuPage({ user, foods, loading, onAddToCart }) {
   )
 }
 
-function FoodCard({ food, qty, setQty, onAdd, adding, canAdd, isGuest, isUnavailable, delay }) {
+function FoodCard({ food, qty, setQty, onAdd, adding, canAdd, isGuest, isUnavailable, isBlockedByAdmin, delay }) {
   const fallbackEmojis = ['🍔','🍕','🍜','🌮','🍣','🍗','🥗','🍫','🍟','🥤','🫓','🥘']
   const uploadedImg    = getFoodImage(food.id, food.name)
   const isEmoji        = food.imageUrl && food.imageUrl.length <= 2
