@@ -1,5 +1,6 @@
 package com.example.foodapp.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,7 +32,7 @@ public class Restaurant {
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
 
-
+    @Column(name = "status")
     private String status = "PENDING"; // PENDING | APPROVED | REJECTED | BLOCKED
  
     public String getStatus() { return status; }
