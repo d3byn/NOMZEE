@@ -1,19 +1,28 @@
 package com.example.foodapp.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.foodapp.entity.Restaurant;
-import com.example.foodapp.entity.RestaurantApproval;
 import com.example.foodapp.entity.Role;
 import com.example.foodapp.entity.User;
 import com.example.foodapp.repository.RestaurantApprovalRepository;
 import com.example.foodapp.repository.RestaurantRepository;
 import com.example.foodapp.repository.UserRepository;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/admin")
@@ -57,7 +66,7 @@ public class AdminController {
             return ResponseEntity.status(403).body("Unauthorized");
 
         List<User> all = userRepo.findAll();
-        all.removeIf(u -> u.getRole() == Role.ADMIN); // ✅ FIX
+        all.removeIf(u -> u.getRole() == Role.ADMIN); // FIX
         return ResponseEntity.ok(all);
     }
 
@@ -159,7 +168,7 @@ public class AdminController {
         Optional<User> opt = userRepo.findById(userId);
         if (opt.isEmpty()) return ResponseEntity.status(404).body("User not found");
 
-        if (opt.get().getRole() == Role.ADMIN) // ✅ FIX
+        if (opt.get().getRole() == Role.ADMIN) //  FIX
             return ResponseEntity.status(400).body("Cannot block admin");
 
         opt.get().setBlocked(true);
