@@ -31,7 +31,7 @@ export default function Footer() {
         </div>
       </div>
       <div style={{ borderTop:'1px solid var(--border)', padding:'18px 24px', textAlign:'center', fontSize:13, color:'var(--text3)' }}>
-        © 2026 NOMZEE. Made with ❤️ by{' '}
+        © 2026 NOMZEE. Made by{' '}
         <a href="https://www.linkedin.com/in/d3bayansarkar/" target="_blank" rel="noopener noreferrer"
           style={{ color:'var(--primary)', fontWeight:600, textDecoration:'none' }}
           onMouseEnter={e => e.target.style.opacity='0.75'}
