@@ -133,7 +133,7 @@ export default function AuthPage({ mode, onLogin }) {
           {!isLogin && (
             <div className="form-group">
               <label>Full Name</label>
-              <input name="name" type="text" placeholder="e.g. Anuja"
+              <input name="name" type="text" placeholder="e.g. John Doe"
                 value={form.name} onChange={handleChange} required />
             </div>
           )}
