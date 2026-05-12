@@ -1,17 +1,19 @@
 <div align="center">
 
-<img src="Frontend/public/logo_nomzee.png" alt="NOMZEE Logo" width="100" height="100" style="border-radius: 20px;" />
+<img src="Frontend/public/logo_nomzee.png" alt="NOMZEE Logo" width="110" height="110" style="border-radius: 20px;" />
 
 # NOMZEE
 
+### *Order food. Pay securely. Run your restaurant. Manage your platform.*
 
-**A full-stack online food delivery platform built with Spring Boot & React.js (still in progress...active changes are being made)**
+**A full-stack online food delivery platform built with Spring Boot & React.js**
 
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Razorpay](https://img.shields.io/badge/Razorpay-Test_Mode-02042B?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.com/)
 [![Maven](https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
 
 ---
@@ -20,13 +22,13 @@
 
 ## 📖 About
 
-**NOMZEE** is a feature-rich food delivery web application where customers can discover restaurants, browse menus, manage their cart, and place orders — while restaurant owners get a full business dashboard to manage their menu, track listings, and control item availability in real time.
+**NOMZEE** is a production-grade, full-stack food delivery web application featuring three distinct user roles, a complete restaurant approval workflow, Razorpay test-mode payment with server-side signature verification, admin-controlled platform governance, and a polished dark/light theme system.
 
 Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 
-- 🎨 **Presentation Layer** — React.js (Vite) with dark-themed UI
-- ⚙️ **Business Logic Layer** — Spring Boot REST API
-- 🗄️ **Data Layer** — MySQL via Spring Data JPA / Hibernate
+- 🎨 **Presentation Layer** — React.js 18 + Vite 5 with CSS variable theming
+- ⚙️ **Business Logic Layer** — Spring Boot 3.x REST API (25+ endpoints)
+- 🗄️ **Data Layer** — MySQL 8.0 via Spring Data JPA / Hibernate (7 tables)
 
 ---
 
@@ -34,27 +36,47 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 
 ### 👤 For Customers
 - Register and log in as a **CUSTOMER**
-- Browse the full menu with live **search**
-- **Add to cart** with quantity controls (+/- per item)
+- Browse the full menu with live **search** across food name, restaurant, and description
+- **Add to cart** with quantity controls (+/− per item, reset after each add)
 - View order summary
-- **Place orders** with the correct grand total stored in the database
+- Pay securely via **Razorpay test-mode** — card, UPI, netbanking
+- Server-side **HMAC SHA256 signature verification** before order placement
 - Track orders with an **animated 4-step progress tracker**
-- View full **order history** with item breakdown
+  - Order Placed → Preparing → On the Way (10 min) → Delivered (20 min)
+- View full **order history** with item breakdown and payment ID
+- Food items from **blocked restaurants** show as unavailable automatically
 
 ### 🏪 For Restaurant Owners (BUSINESS)
 - Register and log in as a **BUSINESS** user
-- Add and manage your restaurants
-- Add food items with **drag & drop image upload** (auto-cropped to 1:1)
+- Submit restaurants for **admin approval** — starts as PENDING
+- Dashboard shows real-time status: **PENDING / APPROVED / REJECTED / BLOCKED**
+- Food items can only be added to **APPROVED** restaurants
+- Add food items with **drag & drop image upload** (auto-cropped 1:1 via HTML Canvas)
 - **Edit** food name, price, description, and image inline
 - **Delete** food items with confirmation modal
-- **Toggle availability** — mark items as unavailable (greyed out for customers)
-- Dashboard shows only **your own restaurant's items** (strict owner filtering)
+- **Toggle availability** — instantly greyed out in the customer menu
+- **Manage Menu tab** loads ALL your foods from the database (not just current session)
+- Strict **owner-filtering** — you can only see and manage your own restaurant's items
 
-### 🔐 Auth & Security
-- Session-based authentication via **HTTP sessions (JSESSIONID)**
-- Role-based route protection (**CUSTOMER** vs **BUSINESS**)
-- CORS configured to allow frontend (`:5173`) ↔ backend (`:8080`)
-- Email-to-role mapping persisted in `localStorage` across sessions
+### ⚙️ For Admin
+- **Approvals Tab** — Review all restaurant registration requests
+  - Approve → restaurant goes APPROVED, owner can now add food
+  - Reject → with optional reason stored and shown to owner
+- **Users Tab** — View all customers and business owners
+  - Block → user gets error on next login, session denied
+  - Unblock → restores full access
+- **Restaurants Tab** — View all restaurants with owner details
+  - Block → all food items of that restaurant become unavailable to customers
+  - Unblock → food items restore to normal
+  - Approve / Reject PENDING restaurants directly from this tab too
+- Role verified from **database on every admin API call** — session cannot be spoofed
+
+### 🌗 Theme & UI
+- **Dark / Light theme toggle** in the navbar (☀️/🌙 switch)
+- Smooth **0.25s CSS variable transitions** across all components
+- Theme persists in **localStorage** across page refreshes
+- Toast notifications for all user actions
+- Fully responsive — desktop and tablet
 
 ---
 
@@ -63,13 +85,28 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 | Layer | Technology |
 |---|---|
 | Frontend | React.js 18, Vite 5, React Router DOM v6 |
-| Styling | CSS Variables, Google Fonts (Syne + DM Sans) |
+| Styling | CSS Custom Properties (variables), Google Fonts |
 | HTTP Client | Axios (global `withCredentials: true`) |
 | Backend | Spring Boot 3.x, Java 17 |
 | ORM | Spring Data JPA, Hibernate |
 | Database | MySQL 8.0 |
+| Payment | Razorpay Java SDK 1.4.5 + JS Checkout CDN |
 | Build Tool | Maven |
-| API Testing | Postman |
+| API Testing | Postman (cookie jar enabled) |
+
+---
+
+## 🗄️ Database Schema
+
+```
+user                → id, name, email (UNIQUE), password, role, is_blocked
+restaurant          → id, name, address, status (PENDING/APPROVED/REJECTED/BLOCKED), owner_id → user
+food_item           → id, name, description, price, imageUrl, restaurant_id → restaurant
+cart_item           → id, quantity, food_id → food_item, user_id → user
+orders              → id, total, createdAt, user_id → user
+restaurant_approval → id, status, adminNote, requestedAt, reviewedAt, restaurant_id, requestedBy_id
+payment             → id, razorpayOrderId, razorpayPaymentId, razorpaySignature, amount, currency, status, createdAt, user_id
+```
 
 ---
 
@@ -78,42 +115,50 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 ```
 nomzee/
 │
-├── food-backend/                        # Spring Boot backend
+├── food-backend/                              # Spring Boot backend
 │   └── src/main/java/com/example/foodapp/
 │       ├── config/
-│       │   └── CorsConfig.java          # CORS setup
+│       │   └── CorsConfig.java                # CORS: all paths (/**), credentials allowed
 │       ├── controller/
-│       │   ├── AuthController.java      # POST /auth/register, /auth/login
-│       │   ├── FoodController.java      # CRUD /food/*
-│       │   ├── RestaurantController.java # /restaurant/*
-│       │   ├── CartController.java      # /cart/*
-│       │   └── OrderController.java     # POST /order/place
+│       │   ├── AuthController.java            # /auth/register, /login, /me
+│       │   ├── FoodController.java            # /food/add, /all, /update/{id}, /delete/{id}
+│       │   ├── RestaurantController.java      # /restaurant/add, /all, /my
+│       │   ├── CartController.java            # /cart/add, /cart/view
+│       │   ├── OrderController.java           # /order/place, /order/my
+│       │   ├── AdminController.java           # All /admin/* endpoints
+│       │   └── PaymentController.java         # /payment/create-order, /payment/verify
 │       ├── entity/
-│       │   ├── User.java
-│       │   ├── Restaurant.java
+│       │   ├── User.java                      # + isBlocked boolean field
+│       │   ├── Restaurant.java                # + status field (default PENDING)
 │       │   ├── FoodItem.java
 │       │   ├── CartItem.java
-│       │   └── Order.java
-│       ├── repository/                  # Spring Data JPA interfaces
-│       ├── service/                     # Service interfaces
-│       └── service/serviceimpl/         # Business logic implementations
+│       │   ├── Order.java
+│       │   ├── RestaurantApproval.java        # approval tracking table
+│       │   └── Payment.java                   # Razorpay transaction table
+│       ├── repository/                        # Spring Data JPA interfaces
+│       │   ├── RestaurantApprovalRepository.java  # findByStatus, findByRestaurantId
+│       │   └── PaymentRepository.java         # findByRazorpayOrderId
+│       ├── service/ + service/serviceimpl/    # Business logic (FoodServiceImpl checks APPROVED)
+│       └── resources/
+│           └── application.properties         # DB config + Razorpay keys
 │
-└── rest-api-frontend/                   # React.js frontend
+└── rest-api-frontend/                         # React.js frontend
     ├── public/
-    │   └── logo_nomzee.png              # Favicon & navbar logo
+    │   └── logo_nomzee.png                    # Favicon + navbar logo
     └── src/
-        ├── components/
-        │   ├── Navbar.jsx               # Role-aware navigation
-        │   ├── Welcome.jsx              # Landing page / hero
-        │   ├── AuthPage.jsx             # Login & Register
-        │   ├── MenuPage.jsx             # Food grid with cart controls
-        │   ├── CartPage.jsx             # Cart + order summary
-        │   ├── OrdersPage.jsx           # Order history + tracker
-        │   ├── DashboardPage.jsx        # Business owner dashboard
-        │   └── Footer.jsx
-        ├── App.jsx                      # Root component + routing
-        ├── App.css                      # Auth + global component styles
-        └── index.css                    # CSS variables + base styles
+        ├── index.css                          # CSS variables dark/light theme system
+        ├── App.css                            # Auth pages, layout, toast styles
+        ├── App.jsx                            # Root: routing, theme toggle, /auth/me call
+        └── components/
+            ├── Navbar.jsx                     # Theme toggle switch, role-aware nav, cart badge
+            ├── Welcome.jsx                    # Landing hero, stats, featured foods
+            ├── AuthPage.jsx                   # Login + Register — calls /auth/me for real role
+            ├── MenuPage.jsx                   # Food grid, blocked restaurant detection
+            ├── CartPage.jsx                   # Cart + Razorpay payment integration
+            ├── OrdersPage.jsx                 # Order history + animated progress tracker
+            ├── DashboardPage.jsx              # Business: restaurant, food CRUD, manage menu
+            ├── AdminPage.jsx                  # Admin: approvals, users, restaurants (3 tabs)
+            └── Footer.jsx                     # Logo, nav links, LinkedIn credits
 ```
 
 ---
@@ -140,8 +185,6 @@ cd nomzee
 
 ### 2. Set Up the Database
 
-Open MySQL and run:
-
 ```sql
 CREATE DATABASE nomzee;
 ```
@@ -159,9 +202,13 @@ spring.datasource.password=yourpassword
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
+# Razorpay Test Keys (get free keys at dashboard.razorpay.com)
+razorpay.key.id=rzp_test_XXXXXXXXXXXXXXX
+razorpay.key.secret=XXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
-> ⚠️ Keep `ddl-auto=update` — never use `create` or `create-drop` in production as it wipes your data on every restart.
+> ⚠️ Keep `ddl-auto=update` — never use `create-drop` as it wipes data on restart.
 
 ---
 
@@ -172,13 +219,25 @@ cd food-backend
 mvn spring-boot:run
 ```
 
-The backend will start at **http://localhost:8080**
-
-Tables are auto-created by Hibernate on first run.
+Backend starts at **http://localhost:8080**. Tables auto-created by Hibernate on first run.
 
 ---
 
-### 5. Start the Frontend
+### 5. Create Admin User
+
+After the backend starts (tables created), run this SQL once:
+
+```sql
+INSERT INTO user (name, email, password, role, is_blocked)
+VALUES ('Admin', 'admin@nomzee.com', 'admin123', 'ADMIN', 0);
+```
+
+> If `is_blocked` column is missing: `ALTER TABLE user ADD COLUMN is_blocked TINYINT(1) DEFAULT 0;`
+> If `status` column missing on restaurant: `ALTER TABLE restaurant ADD COLUMN status VARCHAR(20) DEFAULT 'PENDING';`
+
+---
+
+### 6. Start the Frontend
 
 ```bash
 cd rest-api-frontend
@@ -186,9 +245,9 @@ npm install
 npm run dev
 ```
 
-The frontend will start at **http://localhost:5173**
+Frontend starts at **http://localhost:5173**
 
-> The Vite proxy automatically forwards all API calls (`/auth`, `/food`, `/cart`, `/order`, `/restaurant`) to `http://localhost:8080` — no manual URL configuration needed.
+> Vite proxy auto-forwards all API calls (`/auth`, `/food`, `/cart`, `/order`, `/restaurant`, `/admin`, `/payment`) to `http://localhost:8080`.
 
 ---
 
@@ -196,117 +255,106 @@ The frontend will start at **http://localhost:5173**
 
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
-| `POST` | `/auth/register` | Register a new user | None |
-| `POST` | `/auth/login` | Login — creates session | None |
+| `POST` | `/auth/register` | Register CUSTOMER or BUSINESS | None |
+| `POST` | `/auth/login` | Login — creates HTTP session | None |
+| `GET` | `/auth/me` | Get real user + role from DB | Session |
 | `GET` | `/food/all` | Get all food items | None |
-| `POST` | `/food/add` | Add new food item | Session |
+| `POST` | `/food/add` | Add food (APPROVED restaurant only) | Session |
 | `PUT` | `/food/update/{id}` | Edit food item | Session |
 | `DELETE` | `/food/delete/{id}` | Delete food item | Session |
-| `POST` | `/restaurant/add` | Register restaurant | Session |
-| `GET` | `/restaurant/all` | Get all restaurants | None |
+| `POST` | `/restaurant/add` | Register restaurant → PENDING + approval record | Session |
+| `GET` | `/restaurant/all` | Get all restaurants with status | None |
 | `GET` | `/restaurant/my` | Get owner's restaurants only | Session |
-| `POST` | `/cart/add` | Add item to cart `{foodId, qty}` | Session |
-| `GET` | `/cart/view` | View cart items | Session |
-| `POST` | `/order/place` | Place order `{total}` | Session |
+| `POST` | `/cart/add` | Add `{foodId, qty}` to cart | Session |
+| `GET` | `/cart/view` | View cart | Session |
+| `POST` | `/order/place` | Place order `{total}` — clears cart | Session |
+| `GET` | `/order/my` | Get order history | Session |
+| `GET` | `/admin/all-approvals` | All restaurant approval records | Admin |
+| `GET` | `/admin/all-users` | All non-admin users | Admin |
+| `GET` | `/admin/all-restaurants` | All restaurants | Admin |
+| `POST` | `/admin/approve-restaurant/{id}` | Approve → APPROVED | Admin |
+| `POST` | `/admin/reject-restaurant/{id}` | Reject `{reason}` | Admin |
+| `POST` | `/admin/block-restaurant/{id}` | Block → foods unavailable | Admin |
+| `POST` | `/admin/unblock-restaurant/{id}` | Unblock restaurant | Admin |
+| `POST` | `/admin/block-user/{id}` | Block user → login denied | Admin |
+| `POST` | `/admin/unblock-user/{id}` | Unblock user | Admin |
+| `POST` | `/payment/create-order` | Create Razorpay order `{amount}` | Session |
+| `POST` | `/payment/verify` | Verify HMAC + place order | Session |
 
 ---
 
-## 🗄️ Database Schema
+## 🔐 Important Backend Fixes
 
+If the admin panel shows users/restaurants as empty, verify these are done:
+
+**1. `CorsConfig.java`** — must use `/**` not `/auth/**`:
+```java
+source.registerCorsConfiguration("/**", config);
 ```
-user         → id, name, email, password, role
-restaurant   → id, name, address, owner_id (FK→user)
-food_item    → id, name, description, price, imageUrl, restaurant_id (FK→restaurant)
-cart_item    → id, quantity, food_id (FK→food_item), user_id (FK→user)
-orders       → id, total, createdAt, user_id (FK→user)
-```
 
----
-
-## 🧪 Test the API with Postman
-
-**1. Register as Customer**
-```json
-POST /auth/register
-{
-  "name": "customer",
-  "email": "customer@gmail.com",
-  "password": "1234",
-  "role": "CUSTOMER",
-  "phone": "9876543210",
-  "address": "Kolkata"
+**2. `AuthController.java`** — must have `/me` endpoint:
+```java
+@GetMapping("/me")
+public ResponseEntity<?> getCurrentUser(HttpSession session) {
+    User u = (User) session.getAttribute("user");
+    if (u == null) return ResponseEntity.status(401).body("Not logged in");
+    return ResponseEntity.ok(repo.findByEmail(u.getEmail()));
 }
 ```
 
-**2. Register as Business**
-```json
-POST /auth/register
-{
-  "name": "RestaurantOwner",
-  "email": "owner@gmail.com",
-  "password": "1234",
-  "role": "BUSINESS"
-}
+**3. `User.java`** — `isBlocked` field naming:
+```java
+private boolean isBlocked = false;
+public boolean isBlocked() { return isBlocked; }
+public void setBlocked(boolean blocked) { isBlocked = blocked; }
 ```
 
-**3. Login**
-```json
-POST /auth/login
-{ "email": "owner@gmail.com", "password": "1234" }
-```
-> Postman automatically saves the `JSESSIONID` cookie. All subsequent requests use it.
-
-**4. Add Restaurant**
-```json
-POST /restaurant/add
-{ "name": "Food Paradise", "address": "Kolkata" }
-```
-
-**5. Add Food Item**
-```json
-POST /food/add
-{
-  "name": "Pizza",
-  "description": "Cheesy pizza",
-  "price": 250,
-  "imageUrl": "img",
-  "restaurant": { "id": 1 }
-}
-```
-
-**6. Add to Cart (as Customer)**
-```json
-POST /cart/add
-{ "foodId": 1, "qty": 2 }
-```
-
-**7. Place Order**
-```json
-POST /order/place
-{ "total": 952 }
+**4. `Restaurant.java`** — status field with column annotation:
+```java
+@Column(name = "status")
+private String status = "PENDING";
 ```
 
 ---
 
-## 📸 Screenshots
+## 💳 Test Razorpay Payment
 
-| Home Page | Menu | Cart | Dashboard |
-|---|---|---|---|
-| ![Home]() | ![Menu]() | ![Cart]() | ![Dashboard]() |
+Use these test credentials in the Razorpay payment modal:
+
+| Field | Value |
+|---|---|
+| Card Number | `4111 1111 1111 1111` |
+| Expiry | Any future date (e.g. `12/26`) |
+| CVV | Any 3 digits (e.g. `123`) |
+| OTP | `1234` |
 
 ---
 
 ## 🔮 Future Enhancements
 
-- [ ] JWT Authentication (stateless, mobile-ready)
 - [ ] BCrypt password hashing via Spring Security
-- [ ] Razorpay / Stripe payment gateway integration
+- [ ] JWT authentication (stateless, mobile-ready)
+- [ ] Live Razorpay production keys + webhook handling
 - [ ] AWS S3 / Cloudinary for cloud image storage
-- [ ] Real-time order tracking via WebSockets
-- [ ] Admin panel for platform-wide management
-- [ ] Server-side food search and category filters
+- [ ] Real-time order updates via WebSockets (STOMP)
+- [ ] Email notifications via Spring Mail (SMTP already configured)
+- [ ] Server-side food search with category and price filters
 - [ ] Ratings & reviews system
-- [ ] React Native mobile app
+- [ ] Order cancellation with auto-refund
+- [ ] Docker + docker-compose setup
+- [ ] React Native mobile app (iOS + Android)
+
+---
+
+## 📸 Screenshots
+
+| Home (Dark) | Home (Light) | Menu | Cart |
+|---|---|---|---|
+| ![Home Dark]() | ![Home Light]() | ![Menu]() | ![Cart]() |
+
+| Admin Approvals | Admin Users | Dashboard | Orders |
+|---|---|---|---|
+| ![Approvals]() | ![Users]() | ![Dashboard]() | ![Orders]() |
 
 ---
 
@@ -318,8 +366,3 @@ POST /order/place
 | **Anuja Ghosal** | [linkedin.com/in/anuja-ghosal-10b10b2b2](https://www.linkedin.com/in/anuja-ghosal-10b10b2b2/) |
 
 ---
-
-
-<div align="center">
-
-</div>
