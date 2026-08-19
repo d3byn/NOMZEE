@@ -346,23 +346,11 @@ Use these test credentials in the Razorpay payment modal:
 
 ---
 
-## 📸 Screenshots
-
-| Home (Dark) | Home (Light) | Menu | Cart |
-|---|---|---|---|
-| ![Home Dark]() | ![Home Light]() | ![Menu]() | ![Cart]() |
-
-| Admin Approvals | Admin Users | Dashboard | Orders |
-|---|---|---|---|
-| ![Approvals]() | ![Users]() | ![Dashboard]() | ![Orders]() |
-
----
-
 ## 👨‍💻 Authors
 
 | Name | LinkedIn |
 |---|---|
 | **Debayan Sarkar** | [linkedin.com/in/d3bayansarkar](https://www.linkedin.com/in/d3bayansarkar/) |
-| **Anuja Ghosal** | [linkedin.com/in/anuja-ghosal-10b10b2b2](https://www.linkedin.com/in/anuja-ghosal-10b10b2b2/) |
+| **Anuja Ghosal** | [linkedin.com/in/anuja-ghosal](https://www.linkedin.com/in/anuja-ghosal/) |
 
 ---
