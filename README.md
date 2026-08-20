@@ -22,19 +22,19 @@
 
 ## 📖 About
 
-**NOMZEE** is a production-grade, full-stack food delivery web application featuring three distinct user roles, a complete restaurant approval workflow, Razorpay test-mode payment with server-side signature verification, admin-controlled platform governance, and a polished dark/light theme system.
+**NOMZEE**, full-stack food delivery web application featuring three distinct user roles, a complete restaurant approval workflow, Razorpay test-mode payment with server-side signature verification, admin-controlled platform governance, and a polished dark/light theme system.
 
 Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 
-- 🎨 **Presentation Layer** — React.js 18 + Vite 5 with CSS variable theming
-- ⚙️ **Business Logic Layer** — Spring Boot 3.x REST API (25+ endpoints)
-- 🗄️ **Data Layer** — MySQL 8.0 via Spring Data JPA / Hibernate (7 tables)
+-  **Presentation Layer** — React.js 18 + Vite 5 with CSS variable theming
+-  **Business Logic Layer** — Spring Boot 3.x REST API (25+ endpoints)
+-  **Data Layer** — MySQL 8.0 via Spring Data JPA / Hibernate (7 tables)
 
 ---
 
-## ✨ Features
+##  Features
 
-### 👤 For Customers
+###  For Customers
 - Register and log in as a **CUSTOMER**
 - Browse the full menu with live **search** across food name, restaurant, and description
 - **Add to cart** with quantity controls (+/− per item, reset after each add)
@@ -46,7 +46,7 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 - View full **order history** with item breakdown and payment ID
 - Food items from **blocked restaurants** show as unavailable automatically
 
-### 🏪 For Restaurant Owners (BUSINESS)
+###  For Restaurant Owners (BUSINESS)
 - Register and log in as a **BUSINESS** user
 - Submit restaurants for **admin approval** — starts as PENDING
 - Dashboard shows real-time status: **PENDING / APPROVED / REJECTED / BLOCKED**
@@ -58,7 +58,7 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 - **Manage Menu tab** loads ALL your foods from the database (not just current session)
 - Strict **owner-filtering** — you can only see and manage your own restaurant's items
 
-### ⚙️ For Admin
+###  For Admin
 - **Approvals Tab** — Review all restaurant registration requests
   - Approve → restaurant goes APPROVED, owner can now add food
   - Reject → with optional reason stored and shown to owner
@@ -71,7 +71,7 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
   - Approve / Reject PENDING restaurants directly from this tab too
 - Role verified from **database on every admin API call** — session cannot be spoofed
 
-### 🌗 Theme & UI
+###  Theme & UI
 - **Dark / Light theme toggle** in the navbar (☀️/🌙 switch)
 - Smooth **0.25s CSS variable transitions** across all components
 - Theme persists in **localStorage** across page refreshes
@@ -80,7 +80,7 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -96,7 +96,7 @@ Built as a full-stack project, NOMZEE follows a clean three-tier architecture:
 
 ---
 
-## 🗄️ Database Schema
+##  Database Schema
 
 ```
 user                → id, name, email (UNIQUE), password, role, is_blocked
@@ -110,7 +110,7 @@ payment             → id, razorpayOrderId, razorpayPaymentId, razorpaySignatur
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 nomzee/
@@ -163,7 +163,7 @@ nomzee/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -208,7 +208,7 @@ razorpay.key.id=rzp_test_XXXXXXXXXXXXXXX
 razorpay.key.secret=XXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
-> ⚠️ Keep `ddl-auto=update` — never use `create-drop` as it wipes data on restart.
+>  Keep `ddl-auto=update` — never use `create-drop` as it wipes data on restart.
 
 ---
 
@@ -251,7 +251,7 @@ Frontend starts at **http://localhost:5173**
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
@@ -283,7 +283,7 @@ Frontend starts at **http://localhost:5173**
 
 ---
 
-## 🔐 Important Backend Fixes
+##  Important Backend Fixes
 
 If the admin panel shows users/restaurants as empty, verify these are done:
 
@@ -317,7 +317,7 @@ private String status = "PENDING";
 
 ---
 
-## 💳 Test Razorpay Payment
+##  Test Razorpay Payment
 
 Use these test credentials in the Razorpay payment modal:
 
@@ -330,7 +330,7 @@ Use these test credentials in the Razorpay payment modal:
 
 ---
 
-## 🔮 Future Enhancements
+##  Future Enhancements
 
 - [ ] BCrypt password hashing via Spring Security
 - [ ] JWT authentication (stateless, mobile-ready)
@@ -346,7 +346,7 @@ Use these test credentials in the Razorpay payment modal:
 
 ---
 
-## 👨‍💻 Authors
+##  Authors
 
 | Name | LinkedIn |
 |---|---|
