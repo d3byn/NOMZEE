@@ -115,7 +115,7 @@ payment             → id, razorpayOrderId, razorpayPaymentId, razorpaySignatur
 ```
 nomzee/
 │
-├── food-backend/                              # Spring Boot backend
+├── backend/                                   # Spring Boot backend
 │   └── src/main/java/com/example/foodapp/
 │       ├── config/
 │       │   └── CorsConfig.java                # CORS: all paths (/**), credentials allowed
@@ -142,7 +142,7 @@ nomzee/
 │       └── resources/
 │           └── application.properties         # DB config + Razorpay keys
 │
-└── rest-api-frontend/                         # React.js frontend
+└── frontend/                                  # React.js frontend
     ├── public/
     │   └── logo_nomzee.png                    # Favicon + navbar logo
     └── src/
