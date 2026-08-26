@@ -2,7 +2,7 @@
 
 <img src="Frontend/public/logo_nomzee.png" alt="NOMZEE Logo" width="110" height="110" style="border-radius: 20px;" />
 
-# NOMZEE
+# Nomzee
 
 ### *Order food. Pay securely. Run your restaurant. Manage your platform.*
 
